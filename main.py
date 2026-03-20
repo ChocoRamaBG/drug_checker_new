@@ -21,7 +21,7 @@ except NameError:
     output_dir = os.getcwd()
 
 # Екселът ТРЯБВА да е качен в същата папка в GitHub хранилището!
-EXCEL_PATH = os.path.join(output_dir, "кодове с цени и ПБР за 2026г_.xlsx")
+EXCEL_PATH = os.path.join(output_dir, "кодове с цени и ПБР за 2026г.xlsx")
 
 # Вземаме URL-а от тайните на GitHub Actions
 POWER_AUTOMATE_WEBHOOK_URL = os.environ.get("POWER_AUTOMATE_WEBHOOK_URL", "")
@@ -83,7 +83,7 @@ def scrape_boomer_portal():
     
     print("Зареждаме твоите екселски редчовци...")
     try:
-        df = pd.read_excel(EXCEL_PATH, sheet_name="Цени")
+        df = pd.read_excel(EXCEL_PATH, sheet_name="Цени 180326")
     except Exception as e:
         print(f"What the hell, it's a паприкаш! Excel failed: {e}")
         return
