@@ -223,7 +223,7 @@ def scrape_boomer_portal():
 
                             <!-- Content Card -->
                             <div style="padding: 20px;">
-                                <p style="margin: 0 0 10px 0; font-size: 15px; color: #a3a3a3; line-height: 1.6;">следните продукти с променени цени на ТЕ в Националния регистър:</p>
+                                <p style="margin: 0 0 10px 0; font-size: 15px; color: #a3a3a3; line-height: 1.6;">Следните продукти са с променени цени на ТЕ в Националния регистър:</p>
 
                                 <!-- List of products -->
                                 {product_cards_html}
