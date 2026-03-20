@@ -170,110 +170,110 @@ def scrape_boomer_portal():
     
     current_date = today.strftime("%d.%m.%Y")
     
-if len(scraped_data) > 0:
-    product_cards_html = "" 
-    for row in scraped_data:
-        badge_style = get_dynamic_color(row[6])
+    if len(scraped_data) > 0:
+        product_cards_html = "" 
+        for row in scraped_data:
+            badge_style = get_dynamic_color(row[6])
+            
+            # Outlook-proof table layout, no more dark mode misery, льольо!
+            product_cards_html += f"""
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-bottom: 1px solid #e2e8f0; padding: 20px 0; margin-bottom: 5px;">
+                <tr>
+                    <td>
+                        <div style="font-size: 13px; color: #64748b; padding-bottom: 8px; font-family: 'Segoe UI', Arial, sans-serif;">
+                            <span style="font-weight:700; color:#2d4379; font-size:12px; margin-right: 5px; text-transform: uppercase;">код нзок:</span>{row[0]}
+                        </div>
+                        <div style="font-size: 13px; color: #64748b; padding-bottom: 14px; font-family: 'Segoe UI', Arial, sans-serif;">
+                            <span style="font-weight:700; color:#2d4379; font-size:12px; margin-right: 5px; text-transform: uppercase;">код съвет:</span>{row[1]}
+                        </div>
+                        <div style="font-size: 16px; padding-bottom: 16px; line-height: 1.5; font-family: 'Segoe UI', Arial, sans-serif;">
+                            <strong style="color: #1e293b;">{row[2]}</strong>
+                        </div>
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td style="padding-bottom: 8px;">
+                                    <div style="font-size: 13px; color: #64748b; font-family: 'Segoe UI', Arial, sans-serif;">
+                                        <span style="font-weight:700; color:#94a3b8; font-size:11px; text-transform: uppercase; margin-right: 5px;">ПРЕДХОДНА ЦЕНА ТЕ:</span>€{row[3]:.2f}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-bottom: 14px;">
+                                    <div style="font-size: 13px; color: #2d4379; font-family: 'Segoe UI', Arial, sans-serif;">
+                                        <span style="font-weight:700; color:#2d4379; font-size:11px; text-transform: uppercase; margin-right: 5px;">НОВА ЦЕНА ТЕ:</span><strong>€{row[4]:.2f}</strong>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span style="padding: 6px 12px; border-radius: 4px; font-weight: 700; font-size: 12px; display: inline-block; font-family: 'Segoe UI', Arial, sans-serif; {badge_style}">{row[5]}</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            """
         
-        # Outlook-proof table layout, no more dark mode misery, льольо!
-        product_cards_html += f"""
-        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-bottom: 1px solid #e2e8f0; padding: 20px 0; margin-bottom: 5px;">
-            <tr>
-                <td>
-                    <div style="font-size: 13px; color: #64748b; padding-bottom: 8px; font-family: 'Segoe UI', Arial, sans-serif;">
-                        <span style="font-weight:700; color:#2d4379; font-size:12px; margin-right: 5px; text-transform: uppercase;">код нзок:</span>{row[0]}
-                    </div>
-                    <div style="font-size: 13px; color: #64748b; padding-bottom: 14px; font-family: 'Segoe UI', Arial, sans-serif;">
-                        <span style="font-weight:700; color:#2d4379; font-size:12px; margin-right: 5px; text-transform: uppercase;">код съвет:</span>{row[1]}
-                    </div>
-                    <div style="font-size: 16px; padding-bottom: 16px; line-height: 1.5; font-family: 'Segoe UI', Arial, sans-serif;">
-                        <strong style="color: #1e293b;">{row[2]}</strong>
-                    </div>
-                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td style="padding-bottom: 8px;">
-                                <div style="font-size: 13px; color: #64748b; font-family: 'Segoe UI', Arial, sans-serif;">
-                                    <span style="font-weight:700; color:#94a3b8; font-size:11px; text-transform: uppercase; margin-right: 5px;">ПРЕДХОДНА ЦЕНА ТЕ:</span>€{row[3]:.2f}
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="padding-bottom: 14px;">
-                                <div style="font-size: 13px; color: #2d4379; font-family: 'Segoe UI', Arial, sans-serif;">
-                                    <span style="font-weight:700; color:#2d4379; font-size:11px; text-transform: uppercase; margin-right: 5px;">НОВА ЦЕНА ТЕ:</span><strong>€{row[4]:.2f}</strong>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span style="padding: 6px 12px; border-radius: 4px; font-weight: 700; font-size: 12px; display: inline-block; font-family: 'Segoe UI', Arial, sans-serif; {badge_style}">{row[5]}</span>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
+        final_email_html = f"""
+        <!DOCTYPE html>
+        <html lang="bg">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="background-color: #f8fafc; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif;">
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#f8fafc" style="padding: 20px 10px;">
+                <tr>
+                    <td align="center">
+                        <table border="0" cellpadding="0" cellspacing="0" align="center" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                            <tr>
+                                <td>
+                                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="background-color: #ffffff; padding: 25px 20px; border-radius: 12px 12px 0 0; border-bottom: 3px solid #2d4379; text-align: left;">
+                                                <div style="color: #2d4379; font-size: 22px; font-weight: 800; margin-bottom: 5px; font-family: 'Segoe UI', Arial, sans-serif;">SAT Health Update</div>
+                                                <div style="font-size: 13px; color: #64748b; font-family: 'Segoe UI', Arial, sans-serif;">Актуализация: {site_update_date}</div>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="padding: 25px 20px;">
+                                                <p style="margin: 0 0 15px 0; font-size: 15px; color: #334155; line-height: 1.6; font-family: 'Segoe UI', Arial, sans-serif;">
+                                                    Следните продукти са с променени цени на ТЕ в Националния регистър:
+                                                </p>
+                                                {product_cards_html}
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="padding: 20px; font-size: 12px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; background-color: #f8fafc; border-radius: 0 0 12px 12px; font-family: 'Segoe UI', Arial, sans-serif;">
+                                                Строго конфиденциално. Генерирано на {current_date} от <strong style="color: #2d4379;">SAT Health Monitoring Systems</strong>.
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>
         """
-    
-    final_email_html = f"""
-    <!DOCTYPE html>
-    <html lang="bg">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body style="background-color: #f8fafc; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif;">
-        <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#f8fafc" style="padding: 20px 10px;">
-            <tr>
-                <td align="center">
-                    <table border="0" cellpadding="0" cellspacing="0" align="center" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
-                        <tr>
-                            <td>
-                                <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                                    <tr>
-                                        <td style="background-color: #ffffff; padding: 25px 20px; border-radius: 12px 12px 0 0; border-bottom: 3px solid #2d4379; text-align: left;">
-                                            <div style="color: #2d4379; font-size: 22px; font-weight: 800; margin-bottom: 5px; font-family: 'Segoe UI', Arial, sans-serif;">SAT Health Update</div>
-                                            <div style="font-size: 13px; color: #64748b; font-family: 'Segoe UI', Arial, sans-serif;">Актуализация: {site_update_date}</div>
-                                        </td>
-                                    </tr>
-                                </table>
-
-                                <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                                    <tr>
-                                        <td style="padding: 25px 20px;">
-                                            <p style="margin: 0 0 15px 0; font-size: 15px; color: #334155; line-height: 1.6; font-family: 'Segoe UI', Arial, sans-serif;">
-                                                Следните продукти са с променени цени на ТЕ в Националния регистър:
-                                            </p>
-                                            {product_cards_html}
-                                        </td>
-                                    </tr>
-                                </table>
-
-                                <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                                    <tr>
-                                        <td style="padding: 20px; font-size: 12px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; background-color: #f8fafc; border-radius: 0 0 12px 12px; font-family: 'Segoe UI', Arial, sans-serif;">
-                                            Строго конфиденциално. Генерирано на {current_date} от <strong style="color: #2d4379;">SAT Health Monitoring Systems</strong>.
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-    </body>
-    </html>
-    """
-    
-    email_file_path = os.path.join(output_dir, "SAT_Health_Report.html")
-    with open(email_file_path, "w", encoding="utf-8") as f:
-        f.write(final_email_html)
         
-    print(f"Репортчовците са готови в: {email_file_path}")
-    send_to_power_automate(final_email_html)
-else:
-    print("Няма промени в цените. Скипваме репортчовците.")
+        email_file_path = os.path.join(output_dir, "SAT_Health_Report.html")
+        with open(email_file_path, "w", encoding="utf-8") as f:
+            f.write(final_email_html)
+            
+        print(f"Репортчовците са готови в: {email_file_path}")
+        send_to_power_automate(final_email_html)
+    else:
+        print("Няма промени в цените. Скипваме репортчовците.")
 
 if __name__ == "__main__":
     scrape_boomer_portal()
