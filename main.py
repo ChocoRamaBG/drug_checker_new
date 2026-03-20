@@ -69,14 +69,14 @@ def send_to_power_automate(html_content):
 
 def get_dynamic_color(percentage_diff):
     """
-    Цвят без прозрачност.
-    Ако е отрицателно -> Червено.
-    Ако е положително -> Зелено.
+    Цвят без прозрачност, dark mode съвместим.
+    Ако е отрицателно -> Тъмно червено.
+    Ако е положително -> Тъмно зелено.
     """
     if percentage_diff < 0:
-        return "background-color: #ef4444; color: #ffffff;"
+        return "background-color: #8b1a1a; color: #ffffff;"
     else:
-        return "background-color: #22c55e; color: #ffffff;"
+        return "background-color: #1b5e20; color: #ffffff;"
 
 def scrape_boomer_portal():
     today = datetime.datetime.now()
@@ -175,26 +175,26 @@ def scrape_boomer_portal():
         for row in scraped_data:
             badge_style = get_dynamic_color(row[6])
             
-            # Хардкоднат мобилен изглед, който Outlook не може да счупи
+            # 1:1 с Dark Mode скрийншота ти, льольо!
             product_cards_html += f"""
-            <div style="border-bottom: 1px solid #e2e8f0; padding: 20px 0;">
-                <div style="font-size: 13px; color: #64748b; padding-bottom: 8px;">
-                    <span style="font-weight:700; color:#94a3b8; font-size:10px; margin-right: 5px;">КОД НЗОК:</span>{row[0]}
+            <div style="border-bottom: 1px solid #333333; padding: 25px 0;">
+                <div style="font-size: 13px; color: #a3a3a3; padding-bottom: 6px; font-family: 'Segoe UI', Arial, sans-serif;">
+                    <span style="font-weight:700; color:#888888; font-size:12px; margin-right: 5px;">код нзок:</span>{row[0]}
                 </div>
-                <div style="font-size: 13px; color: #64748b; padding-bottom: 8px;">
-                    <span style="font-weight:700; color:#94a3b8; font-size:10px; margin-right: 5px;">КОД СЪВЕТ:</span>{row[1]}
+                <div style="font-size: 13px; color: #a3a3a3; padding-bottom: 16px; font-family: 'Segoe UI', Arial, sans-serif;">
+                    <span style="font-weight:700; color:#888888; font-size:12px; margin-right: 5px;">код съвет:</span>{row[1]}
                 </div>
-                <div style="font-size: 14px; padding-bottom: 8px;">
-                    <strong style="color: #0f172a;">{row[2]}</strong>
+                <div style="font-size: 16px; padding-bottom: 16px; line-height: 1.5; font-family: 'Segoe UI', Arial, sans-serif;">
+                    <strong style="color: #ffffff;">{row[2]}</strong>
                 </div>
-                <div style="font-size: 13px; padding-bottom: 8px;">
-                    <span style="font-weight:700; color:#94a3b8; font-size:10px; margin-right: 5px;">ПРЕДХОДНА ЦЕНА ТЕ:</span>€{row[3]:.2f}
+                <div style="font-size: 13px; color: #a3a3a3; padding-bottom: 10px; font-family: 'Segoe UI', Arial, sans-serif;">
+                    <span style="font-weight:700; color:#888888; font-size:11px; text-transform: uppercase; margin-right: 5px;">ПРЕДХОДНА ЦЕНА ТЕ:</span>€{row[3]:.2f}
                 </div>
-                <div style="font-size: 13px; padding-bottom: 8px;">
-                    <span style="font-weight:700; color:#94a3b8; font-size:10px; margin-right: 5px;">НОВА ЦЕНА ТЕ:</span>€{row[4]:.2f}
+                <div style="font-size: 13px; color: #a3a3a3; padding-bottom: 16px; font-family: 'Segoe UI', Arial, sans-serif;">
+                    <span style="font-weight:700; color:#888888; font-size:11px; text-transform: uppercase; margin-right: 5px;">НОВА ЦЕНА ТЕ:</span>€{row[4]:.2f}
                 </div>
-                <div style="padding-top: 5px;">
-                    <span style="padding: 4px 10px; border-radius: 4px; font-weight: 800; font-size: 11px; display: inline-block; {badge_style}">{row[5]}</span>
+                <div style="padding-top: 0px;">
+                    <span style="padding: 6px 12px; border-radius: 4px; font-weight: 700; font-size: 13px; display: inline-block; font-family: 'Segoe UI', Arial, sans-serif; {badge_style}">{row[5]}</span>
                 </div>
             </div>
             """
@@ -206,33 +206,30 @@ def scrape_boomer_portal():
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
         </head>
-        <body style="background-color: #f1f5f9; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif;">
-            <div style="width: 100%; background-color: #f1f5f9; padding: 20px 0;">
+        <body style="background-color: #121212; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif;">
+            <div style="width: 100%; background-color: #121212; padding: 20px 0;">
                 <!-- Main wrapper table to force width in Outlook -->
-                <table width="100%" border="0" cellpadding="0" cellspacing="0" align="center" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" align="center" style="max-width: 600px; margin: 0 auto; background-color: #1a1a1a; border-radius: 12px; border: 1px solid #333333;">
                     <tr>
                         <td>
                             <!-- Header -->
-                            <div style="background-color: #0f172a; padding: 25px 20px; border-radius: 12px 12px 0 0; border-bottom: 4px solid #38bdf8; color: #ffffff;">
-                                <div style="color: #38bdf8; font-size: 22px; font-weight: 800; letter-spacing: 1px; margin-bottom: 5px;">SAT HEALTH</div>
-                                <h2 style="margin: 0; font-size: 18px; font-weight: 600;">Отчет: Промяна в цените на ПЛС</h2>
+                            <div style="background-color: #1a1a1a; padding: 25px 20px; border-radius: 12px 12px 0 0; border-bottom: 1px solid #333333; color: #ffffff;">
+                                <div style="color: #ffffff; font-size: 20px; font-weight: 700; margin-bottom: 5px;">SAT Health Update</div>
                                 
-                                <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-                                    <div style="font-size: 13px; color: #94a3b8; font-weight: 300; padding-bottom: 5px;">Автоматизирана проверка | Приложение № 4</div>
-                                    <div style="font-size: 12px; color: #cbd5e1;">Актуализация: <strong style="color:#38bdf8;">{site_update_date}</strong></div>
+                                <div style="margin-top: 5px;">
+                                    <div style="font-size: 13px; color: #a3a3a3;">Актуализация: {site_update_date}</div>
                                 </div>
                             </div>
 
                             <!-- Content Card -->
                             <div style="padding: 20px;">
-                                <p style="margin: 0 0 15px 0; font-size: 15px; color: #334155; line-height: 1.6;">Здравейте,</p>
-                                <p style="margin: 0 0 20px 0; font-size: 15px; color: #334155; line-height: 1.6;">Автоматизираната проверка приключи успешно. Открити са следните продукти с променени цени на ТЕ в Националния регистър:</p>
+                                <p style="margin: 0 0 10px 0; font-size: 15px; color: #a3a3a3; line-height: 1.6;">следните продукти с променени цени на ТЕ в Националния регистър:</p>
 
                                 <!-- List of products -->
                                 {product_cards_html}
                             </div>
 
-                            <div style="padding: 20px; font-size: 11px; color: #94a3b8; text-align: center; border-top: 1px solid #f1f5f9; background-color: #f8fafc; border-radius: 0 0 12px 12px;">
+                            <div style="padding: 20px; font-size: 12px; color: #666666; text-align: center; border-top: 1px solid #333333; background-color: #1a1a1a; border-radius: 0 0 12px 12px;">
                                 Строго конфиденциално. Генерирано на {current_date} от SAT Health Monitoring Systems.
                             </div>
                         </td>
