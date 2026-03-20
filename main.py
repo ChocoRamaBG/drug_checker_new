@@ -66,6 +66,11 @@ def send_to_power_automate(html_content):
         print(f"Тотален паприкаш при пращането: {e}")
 
 def get_dynamic_color(percentage_diff):
+    """
+    Цвят без прозрачност.
+    Ако е отрицателно -> Червено.
+    Ако е положително -> Зелено.
+    """
     if percentage_diff < 0:
         return "background-color: #ef4444; color: #ffffff;"
     else:
@@ -129,7 +134,7 @@ def scrape_boomer_portal():
             search_btn = driver.find_element(By.ID, "medicamentSearchForm:fastSearchBtn")
             search_btn.click() 
 
-            time.sleep(10)
+            time.sleep(10) # Оставям го 10 сек за headless, че е по-бавно
 
             table_rows = driver.find_elements(By.XPATH, "//*[@id='medicamentSearchForm:resultRegisterFourTable:tb']/tr")
             
@@ -164,10 +169,109 @@ def scrape_boomer_portal():
     current_date = today.strftime("%d.%m.%Y")
     
     if len(scraped_data) > 0:
-        # Тук си остава твоят HTML шит (съкращавам го, за да не спамя)
-        product_cards_html = "".join([f"<p>{row[2]} - {row[5]}</p>" for row in scraped_data]) # Сложи си оригиналния HTML тук
+        product_cards_html = ""
+        for row in scraped_data:
+            badge_style = get_dynamic_color(row[6])
+            
+            product_cards_html += f"""
+            <div class="product-card" style="border-bottom: 1px solid #f1f5f9; padding: 15px 0;">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td class="pc-col-desktop" style="width: 15%; font-size: 13px; color: #64748b; padding-bottom: 5px;">
+                            <span class="m-label" style="display:none; font-weight:700; color:#94a3b8; font-size:10px;">КОД НЗОК: </span>{row[0]}
+                        </td>
+                        <td class="pc-col-desktop" style="width: 15%; font-size: 13px; color: #64748b; padding-bottom: 5px;">
+                            <span class="m-label" style="display:none; font-weight:700; color:#94a3b8; font-size:10px;">КОД СЪВЕТ: </span>{row[1]}
+                        </td>
+                        <td class="pc-col-desktop" style="width: 35%; font-size: 14px; padding-bottom: 5px;">
+                            <strong style="color: #0f172a;">{row[2]}</strong>
+                        </td>
+                        <td class="pc-col-desktop" style="width: 12%; font-size: 13px; padding-bottom: 5px;">
+                            <span class="m-label" style="display:none; font-weight:700; color:#94a3b8; font-size:10px;">ПРЕДХОДНА ЦЕНА ТЕ: </span>€{row[3]:.2f}
+                        </td>
+                        <td class="pc-col-desktop" style="width: 12%; font-size: 13px; padding-bottom: 5px;">
+                            <span class="m-label" style="display:none; font-weight:700; color:#94a3b8; font-size:10px;">НОВА ЦЕНА ТЕ: </span>€{row[4]:.2f}
+                        </td>
+                        <td class="pc-col-desktop" style="width: 11%; font-size: 13px; text-align: right; padding-bottom: 5px;">
+                            <span style="padding: 4px 10px; border-radius: 4px; font-weight: 800; font-size: 11px; display: inline-block; {badge_style}">{row[5]}</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            """
         
-        final_email_html = f"<html><body><h1>Промени!</h1>{product_cards_html}</body></html>" # Сложи си оригиналния HTML тук
+        final_email_html = f"""
+        <!DOCTYPE html>
+        <html lang="bg">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                body {{ background-color: #f1f5f9; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }}
+                @media only screen and (max-width: 600px) {{
+                    .email-container {{ width: 100% !important; }}
+                    .header, .content-card {{ padding: 20px !important; }}
+                    .subtitle-table {{ display: block !important; width: 100% !important; }}
+                    .subtitle-cell {{ display: block !important; width: 100% !important; text-align: left !important; }}
+                    .subtitle-cell-right {{ padding-top: 10px !important; }}
+                    
+                    .desktop-thead {{ display: none !important; }}
+                    .product-card {{ padding: 20px 0 !important; }}
+                    .pc-col-desktop {{ display: block !important; width: 100% !important; text-align: left !important; padding-bottom: 8px !important; }}
+                    .m-label {{ display: inline-block !important; margin-right: 5px !important; }}
+                    .pc-col-desktop:last-child {{ text-align: left !important; padding-top: 5px !important; }}
+                }}
+            </style>
+        </head>
+        <body style="background-color: #f1f5f9; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif;">
+            <div style="width: 100%; background-color: #f1f5f9; padding: 20px 0;">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" style="max-width: 850px; margin: 0 auto;">
+                    <tr>
+                        <td>
+                            <div style="background-color: #0f172a; padding: 30px 40px; border-radius: 12px 12px 0 0; border-bottom: 4px solid #38bdf8; color: #ffffff;">
+                                <div style="color: #38bdf8; font-size: 26px; font-weight: 800; letter-spacing: 1px; margin-bottom: 5px;">SAT HEALTH</div>
+                                <h2 style="margin: 0; font-size: 22px; font-weight: 600;">Отчет: Промяна в цените на ПЛС</h2>
+                                
+                                <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                                    <table class="subtitle-table" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td class="subtitle-cell" style="font-size: 13px; color: #94a3b8; font-weight: 300; text-align: left;">Автоматизирана проверка | Приложение № 4</td>
+                                            <td class="subtitle-cell subtitle-cell-right" style="font-size: 12px; color: #cbd5e1; text-align: right;">Актуализация: <strong style="color:#38bdf8;">{site_update_date}</strong></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="content-card" style="background-color: #ffffff; padding: 40px; border-radius: 0 0 12px 12px; border: 1px solid #e2e8f0; border-top: none;">
+                                <p style="margin: 0 0 18px 0; font-size: 15px; color: #334155; line-height: 1.6;">Здравейте,</p>
+                                <p style="margin: 0 0 25px 0; font-size: 15px; color: #334155; line-height: 1.6;">Автоматизираната проверка приключи успешно. Открити са следните продукти с променени цени на ТЕ в Националния регистър:</p>
+
+                                <table class="desktop-thead" width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border: 1px solid #f1f5f9; border-bottom: 2px solid #f1f5f9;">
+                                    <tr>
+                                        <th style="width: 15%; padding: 12px 10px; text-align: left; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">Код НЗОК</th>
+                                        <th style="width: 15%; padding: 12px 10px; text-align: left; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">Код Съвет</th>
+                                        <th style="width: 35%; padding: 12px 10px; text-align: left; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">Продукт</th>
+                                        <th style="width: 12%; padding: 12px 10px; text-align: left; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">Стара</th>
+                                        <th style="width: 12%; padding: 12px 10px; text-align: left; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">Нова</th>
+                                        <th style="width: 11%; padding: 12px 10px; text-align: right; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">Ръст</th>
+                                    </tr>
+                                </table>
+
+                                {product_cards_html}
+
+                                
+                            </div>
+
+                            <div style="padding: 25px 30px; font-size: 11px; color: #94a3b8; text-align: center;">
+                                Строго конфиденциално. Генерирано на {current_date} от SAT Health Monitoring Systems.
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </body>
+        </html>
+        """
         
         email_file_path = os.path.join(output_dir, "SAT_Health_Report.html")
         with open(email_file_path, "w", encoding="utf-8") as f:
@@ -175,6 +279,7 @@ def scrape_boomer_portal():
             
         print(f"Репортчовците са готови в: {email_file_path}")
         send_to_power_automate(final_email_html)
+        
     else:
         print("Няма промени в цените. Скипваме репортчовците.")
 
