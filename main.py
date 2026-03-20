@@ -25,7 +25,7 @@ EXCEL_PATH = os.path.join(output_dir, "кодове с цени и ПБР за 2
 
 # Вземаме URL-а от тайните на GitHub Actions
 POWER_AUTOMATE_WEBHOOK_URL = os.environ.get("POWER_AUTOMATE_WEBHOOK_URL", "")
-RECIPIENTS_LIST = "georgi.stoychev@sathealth.com, gogpoo@gmail.com" #, lyuben.vasilev@sathealth.com"
+RECIPIENTS_LIST = "georgi.stoychev@sathealth.com, gogpoo@gmail.com, lyuben.vasilev@sathealth.com"
 
 MEMORY_FILE_PATH = os.path.join(output_dir, "prices_memory.json")
 
