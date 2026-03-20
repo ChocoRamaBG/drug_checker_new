@@ -1,0 +1,39 @@
+name: Boomer Portal Price Checker
+
+on:
+  schedule:
+    # Пуска се в 08:00 сутринта UTC на 4-ти и 15-ти всеки месец
+    - cron: '0 8 4,15 * *'
+  workflow_dispatch: # Позволява ти да го пускаш ръчно с бутонче, льольо
+
+permissions:
+  contents: write # Трябва ни, за да коммитваме JSON паметта обратно
+
+jobs:
+  scrape_and_send:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run the magical script
+        env:
+          POWER_AUTOMATE_WEBHOOK_URL: ${{ secrets.POWER_AUTOMATE_WEBHOOK_URL }}
+        run: python main.py
+
+      - name: Commit and push memory updates
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Автоматичен ъпдейт на prices_memory.json"
+          file_pattern: prices_memory.json
