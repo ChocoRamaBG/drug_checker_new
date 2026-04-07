@@ -288,20 +288,21 @@ def scrape_boomer_portal():
                                     <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                         <tr>
                                             <td style="background-color: #ffffff; padding: 25px 20px; border-radius: 12px 12px 0 0; border-bottom: 3px solid #10b981; text-align: left;">
-                                                <div style="color: #10b981; font-size: 22px; font-weight: 800; margin-bottom: 5px; font-family: 'Segoe UI', Arial, sans-serif;">Всичко е точно, шефе!</div>
-                                                <div style="font-size: 13px; color: #64748b; font-family: 'Segoe UI', Arial, sans-serif;">Проверка към: {site_update_date}</div>
+                                                <div style="color: #10b981; font-size: 20px; font-weight: 700; margin-bottom: 5px; font-family: 'Segoe UI', Arial, sans-serif;">Системен статус: Без промени в ценовите регистри</div>
+                                                <div style="font-size: 13px; color: #64748b; font-family: 'Segoe UI', Arial, sans-serif;">Дата на проверка: {site_update_date}</div>
                                             </td>
                                         </tr>
                                     </table>
-
+                                    
                                     <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                         <tr>
-                                            <td style="padding: 35px 20px; text-align: center;">
-                                                <p style="margin: 0 0 10px 0; font-size: 16px; color: #334155; line-height: 1.6; font-family: 'Segoe UI', Arial, sans-serif;">
-                                                    Скриптчето мина без проблеми. <strong>Няма никакви нови промени</strong> в цените за днес. 
+                                            <td style="padding: 35px 20px; text-align: left;">
+                                                <p style="margin: 0 0 10px 0; font-size: 15px; color: #334155; line-height: 1.6; font-family: 'Segoe UI', Arial, sans-serif;">
+                                                    Уважаеми екип,<br><br>
+                                                    Автоматизираната проверка на Националния регистър приключи успешно. <strong>Не са констатирани нови промени</strong> в цените на ТЕ спрямо предходните системни стойности.
                                                 </p>
                                                 <p style="margin: 0; font-size: 14px; color: #64748b; font-family: 'Segoe UI', Arial, sans-serif;">
-                                                    Спи спокойно, никой не е пипал екселчовците.
+                                                    Мониторинговият процес остава активен. При възникване на актуализации във вашите файлове, ще получите своевременно известие.
                                                 </p>
                                             </td>
                                         </tr>
