@@ -45,7 +45,7 @@ def save_memory(memory_data):
     with open(MEMORY_FILE_PATH, 'w', encoding='utf-8') as f:
         json.dump(memory_data, f, indent=4)
 
-def send_to_power_automate(html_content, custom_subject=None):
+def send_to_power_automate(html_content, custom_subject=None, custom_recipients=None):
     if not POWER_AUTOMATE_WEBHOOK_URL:
         print("Гащник, не си сложил URL-а в GitHub Secrets!")
         return
@@ -54,10 +54,12 @@ def send_to_power_automate(html_content, custom_subject=None):
     
     # Ако няма къстъм събджект, ползваме дефолтния
     subject = custom_subject if custom_subject else f"SAT Health Update - {datetime.datetime.now().strftime('%d.%m.%Y')}"
+    # Ако подадем къстъм мейли, ползваме тях, иначе блъскаме на всички от GitHub Secrets
+    recipients = custom_recipients if custom_recipients else RECIPIENTS_LIST
     
     payload = {
         "html_body": html_content,
-        "recipients": RECIPIENTS_LIST,
+        "recipients": recipients,
         "subject": subject
     }
     
@@ -267,6 +269,7 @@ def scrape_boomer_portal():
             f.write(final_email_html)
             
         print(f"Репортчовците са готови в: {email_file_path}")
+        # Тук праща до всички, както си беше, защото ИМА промени
         send_to_power_automate(final_email_html)
     else:
         print("Няма промени в цените. Малини, къпини, все тая... пращаме ти успокоителното писъмце, боклуче.")
@@ -330,8 +333,13 @@ def scrape_boomer_portal():
             f.write(final_email_html)
             
         print(f"Празните репортчовци са готови в: {email_file_path}")
-        # Пращаме го с къстъм събджект, за да не се панираш
-        send_to_power_automate(final_email_html, custom_subject=f"SAT Health: Няма промени - {current_date}")
+        
+        # Пращаме го с къстъм събджект и КЪСТЪМ адресчовци, само за вас двамата хубавци
+        send_to_power_automate(
+            final_email_html, 
+            custom_subject=f"SAT Health: Няма промени - {current_date}",
+            custom_recipients="gogpoo@gmail.com;lyuben.vasilev@sathealth.com"
+        )
 
 if __name__ == "__main__":
     scrape_boomer_portal()
