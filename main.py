@@ -25,13 +25,10 @@ EXCEL_PATH = os.path.join(output_dir, "кодове с цени и ПБР за 2
 
 # Вземаме URL-а от тайните на GitHub Actions
 POWER_AUTOMATE_WEBHOOK_URL = os.environ.get("POWER_AUTOMATE_WEBHOOK_URL", "")
-# Si el Secret no existe, ponemos un string vacío para que explote (explode) después, ¡qué divertido!
-# O puedes poner una lista por defecto si eres un cobarde (coward).
 RECIPIENTS_LIST = os.environ.get("RECIPIENTS_LIST", "")
 
 MEMORY_FILE_PATH = os.path.join(output_dir, "prices_memory.json")
 
-# Оставяме True, защото GitHub Actions ще се грижи за графика през cron
 TEST_MODE_SEND_NOW = True 
 
 def load_memory():
@@ -48,16 +45,20 @@ def save_memory(memory_data):
     with open(MEMORY_FILE_PATH, 'w', encoding='utf-8') as f:
         json.dump(memory_data, f, indent=4)
 
-def send_to_power_automate(html_content):
+def send_to_power_automate(html_content, custom_subject=None):
     if not POWER_AUTOMATE_WEBHOOK_URL:
         print("Гащник, не си сложил URL-а в GitHub Secrets!")
         return
         
     print("Пращаме твоите мейлчовци през Power Automate...")
+    
+    # Ако няма къстъм събджект, ползваме дефолтния
+    subject = custom_subject if custom_subject else f"SAT Health Update - {datetime.datetime.now().strftime('%d.%m.%Y')}"
+    
     payload = {
         "html_body": html_content,
         "recipients": RECIPIENTS_LIST,
-        "subject": f"SAT Health Update - {datetime.datetime.now().strftime('%d.%m.%Y')}"
+        "subject": subject
     }
     
     try:
@@ -70,11 +71,6 @@ def send_to_power_automate(html_content):
         print(f"Тотален паприкаш при пращането: {e}")
 
 def get_dynamic_color(percentage_diff):
-    """
-    Цвят без прозрачност, dark mode съвместим.
-    Ако е отрицателно -> Тъмно червено.
-    Ако е положително -> Тъмно зелено.
-    """
     if percentage_diff < 0:
         return "background-color: #8b1a1a; color: #ffffff;"
     else:
@@ -92,7 +88,6 @@ def scrape_boomer_portal():
 
     memory_prices = load_memory()
     
-    # Headless режим за GitHub Actions, иначе гърми
     chrome_options = Options()
     chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--no-sandbox")
@@ -138,7 +133,7 @@ def scrape_boomer_portal():
             search_btn = driver.find_element(By.ID, "medicamentSearchForm:fastSearchBtn")
             search_btn.click() 
 
-            time.sleep(10) # Оставям го 10 сек за headless, че е по-бавно
+            time.sleep(10)
 
             table_rows = driver.find_elements(By.XPATH, "//*[@id='medicamentSearchForm:resultRegisterFourTable:tb']/tr")
             
@@ -177,7 +172,6 @@ def scrape_boomer_portal():
         for row in scraped_data:
             badge_style = get_dynamic_color(row[6])
             
-            # Outlook-proof table layout, no more dark mode misery, льольо!
             product_cards_html += f"""
             <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-bottom: 1px solid #e2e8f0; padding: 20px 0; margin-bottom: 5px;">
                 <tr>
@@ -275,7 +269,68 @@ def scrape_boomer_portal():
         print(f"Репортчовците са готови в: {email_file_path}")
         send_to_power_automate(final_email_html)
     else:
-        print("Няма промени в цените. Скипваме репортчовците.")
+        print("Няма промени в цените. Малини, къпини, все тая... пращаме ти успокоителното писъмце, боклуче.")
+        
+        final_email_html = f"""
+        <!DOCTYPE html>
+        <html lang="bg">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="background-color: #f8fafc; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif;">
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#f8fafc" style="padding: 20px 10px;">
+                <tr>
+                    <td align="center">
+                        <table border="0" cellpadding="0" cellspacing="0" align="center" style="width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                            <tr>
+                                <td>
+                                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="background-color: #ffffff; padding: 25px 20px; border-radius: 12px 12px 0 0; border-bottom: 3px solid #10b981; text-align: left;">
+                                                <div style="color: #10b981; font-size: 22px; font-weight: 800; margin-bottom: 5px; font-family: 'Segoe UI', Arial, sans-serif;">Всичко е точно, шефе!</div>
+                                                <div style="font-size: 13px; color: #64748b; font-family: 'Segoe UI', Arial, sans-serif;">Проверка към: {site_update_date}</div>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="padding: 35px 20px; text-align: center;">
+                                                <p style="margin: 0 0 10px 0; font-size: 16px; color: #334155; line-height: 1.6; font-family: 'Segoe UI', Arial, sans-serif;">
+                                                    Скриптчето мина без проблеми. <strong>Няма никакви нови промени</strong> в цените за днес. 
+                                                </p>
+                                                <p style="margin: 0; font-size: 14px; color: #64748b; font-family: 'Segoe UI', Arial, sans-serif;">
+                                                    Спи спокойно, никой не е пипал екселчовците.
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="padding: 20px; font-size: 12px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; background-color: #f8fafc; border-radius: 0 0 12px 12px; font-family: 'Segoe UI', Arial, sans-serif;">
+                                                Автоматичен системен статус. Генерирано на {current_date} от <strong style="color: #10b981;">SAT Health Monitoring Systems</strong>.
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>
+        """
+        
+        email_file_path = os.path.join(output_dir, "SAT_Health_Report_No_Changes.html")
+        with open(email_file_path, "w", encoding="utf-8") as f:
+            f.write(final_email_html)
+            
+        print(f"Празните репортчовци са готови в: {email_file_path}")
+        # Пращаме го с къстъм събджект, за да не се панираш
+        send_to_power_automate(final_email_html, custom_subject=f"SAT Health: Няма промени - {current_date}")
 
 if __name__ == "__main__":
     scrape_boomer_portal()
