@@ -1,0 +1,14 @@
+name: Spill the Secretchovci
+on: workflow_dispatch 
+
+jobs:
+  expose-it:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Base64 Trick
+        env:
+          # Ето тук е твоят шибан секрет, гащник!
+          MY_SECRET: ${{ secrets.RECIPIENTS_LIST }}
+        run: |
+          echo "Here is your encoded garbage:"
+          echo "$MY_SECRET" | base64
